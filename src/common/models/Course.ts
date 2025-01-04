@@ -35,8 +35,8 @@ interface IGroup {
 interface IScheme extends Document {
     schemeName: string;
     year: number;
-    groups?: IGroup[];
-    branches?: IBranch[];
+    group?: IGroup[];
+    branch?: IBranch[];
 }
 
 // Define schemas
@@ -88,8 +88,8 @@ const GroupSchema = new Schema<IGroup>({
 const SchemeSchema = new Schema<IScheme>({
     schemeName: { type: String, required: true },
     year: { type: Number, required: true },
-    groups: { type: GroupSchema }, // Optional array of groups
-    branches: { type: BranchSchema }, // Optional array of branches
+    group: { type: GroupSchema }, // Optional array of groups
+    branch: { type: BranchSchema }, // Optional array of branches
 });
 
 // Create model
