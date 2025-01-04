@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 interface Syllabus {
   moduleName: string;
-  cos: string;
+  moduleContent: string;
 }
 
 interface SchemeData {
@@ -36,7 +36,7 @@ export default function DataEntryPage() {
     ltp: "",
     hours: "",
     credits: "",
-    syllabus: [{ moduleName: "", cos: "" }],
+    syllabus: [{ moduleName: "", moduleContent: "" }],
     totalHours: "",
     totalCredits: "",
   });
@@ -73,7 +73,7 @@ export default function DataEntryPage() {
   const addSyllabusModule = () => {
     setSchemeData((prevData) => ({
       ...prevData,
-      syllabus: [...prevData.syllabus, { moduleName: "", cos: "" }],
+      syllabus: [...prevData.syllabus, { moduleName: "", moduleContent: "" }],
     }));
   };
 
@@ -86,6 +86,29 @@ export default function DataEntryPage() {
   };
 
   console.log(schemeData);
+
+  const handleSubmit = async () => {
+  
+    try {
+      const response = await fetch("/api/courses/new", {
+        method: "POST", // Specify the HTTP method
+        headers: {
+          "Content-Type": "application/json", // Ensure the server knows the body is JSON
+        },
+        body: JSON.stringify(schemeData), // Convert the request body to JSON
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const data = await response.json(); // Parse the response JSON
+      console.log("Success:", data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  
 
   return (
     <div className="min-h-screen flex flex-col px-[5vw] py-[2rem] items-center justify-start">
@@ -131,6 +154,7 @@ export default function DataEntryPage() {
                 onChange={handleSelectChange}
                 className="border border-gray-300 rounded px-2 py-2 outline-none w-full text-gray-800"
               >
+                <option value="">Select</option>
                 <option value="Group A">Group A</option>
                 <option value="Group B">Group B</option>
                 <option value="Group C">Group C</option>
@@ -148,10 +172,10 @@ export default function DataEntryPage() {
                 onChange={handleSelectChange}
                 className="border border-gray-300 rounded px-2 py-2 outline-none w-full text-gray-800"
               >
-                <option value="Branch A">Branch A</option>
-                <option value="Branch B">Branch B</option>
-                <option value="Branch C">Branch C</option>
-                <option value="Branch D">Branch D</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Civil Engineering">Civil Engineering</option>
+                <option value="Electrical & Electronics Engineering">Electrical & Electronics Engineering</option>
+                <option value="Mechanical Engineering">Mechanical Engineering</option>
               </select>
             </div>
             <div>
@@ -241,10 +265,7 @@ export default function DataEntryPage() {
             {/* Syllabus Section */}
             <div className="flex flex-col space-y-4 mt-5 w-full">
               {schemeData.syllabus.map((syllabus, index) => (
-                <div
-                  key={index}
-                  className="flex space-x-2 items-start w-full"
-                >
+                <div key={index} className="flex space-x-2 items-start w-full">
                   <div className="flex flex-col space-y-2 w-full">
                     <div className="flex flex-1 flex-col w-full">
                       <span className="text-sm text-gray-800">Module Name</span>
@@ -259,9 +280,9 @@ export default function DataEntryPage() {
                     <div className="flex flex-1 flex-col w-full">
                       <span className="text-sm text-gray-800">COs</span>
                       <textarea
-                      rows={5}
-                        name="cos"
-                        value={syllabus.cos}
+                        rows={5}
+                        name="moduleContent"
+                        value={syllabus.moduleContent}
                         onChange={(e) => handleInputChange(e, index)}
                         className="border border-gray-300 rounded-lg outline-none p-3"
                       />
@@ -286,9 +307,33 @@ export default function DataEntryPage() {
                 +
               </button>
             </div>
+            <div className="flex space-x-4">
+              <div className="flex flex-1 flex-col">
+                <span className="text-sm text-gray-800">Total Hours</span>
+                <input
+                  type="text"
+                  name="totalHours"
+                  value={schemeData.totalHours}
+                  onChange={handleInputChange}
+                  className="border border-gray-300 rounded-lg outline-none p-3"
+                />
+              </div>
+              <div className="flex flex-1 flex-col">
+                <span className="text-sm text-gray-800">Total Credits</span>
+                <input
+                  type="text"
+                  name="totalCredits"
+                  value={schemeData.totalCredits}
+                  onChange={handleInputChange}
+                  className="border border-gray-300 rounded-lg outline-none p-3"
+                />
+              </div>
+            </div>
             <div className="w-full h-[1px] bg-gray-400"></div>
             <div className="">
-              <button className="capitalize w-full bg-azure-600 rounded-lg border-none outline-none py-3 text-white">
+              <button onClick={()=>{
+                handleSubmit()
+              }} className="capitalize w-full bg-azure-600 rounded-lg border-none outline-none py-3 text-white">
                 submit
               </button>
             </div>

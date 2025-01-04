@@ -17,19 +17,19 @@ interface ICourse {
 
 interface ISemester {
     semesterNumber: number;
-    courses: ICourse[];
+    course: ICourse;
     totalHours: number;
     totalCredits: number;
 }
 
 interface IBranch {
     branchName: string;
-    semesters: ISemester[];
+    semester: ISemester; // Changed to a single object instead of an array
 }
 
 interface IGroup {
     groupName: string;
-    branches: IBranch[];
+    branch: IBranch;
 }
 
 interface IScheme extends Document {
@@ -39,6 +39,7 @@ interface IScheme extends Document {
     branches?: IBranch[];
 }
 
+// Define schemas
 const ModuleSchema = new Schema<IModule>({
     moduleName: { type: String, required: true },
     moduleContent: { type: String, required: true },
@@ -55,41 +56,43 @@ const CourseSchema = new Schema<ICourse>({
 });
 
 const SemesterSchema = new Schema<ISemester>({
-    semesterNumber: { type: Number, required: true },
-    courses: { type: [CourseSchema], required: true },
-    totalHours: { type: Number, required: true },
-    totalCredits: { type: Number, required: true },
+    semesterNumber: { type: Number },
+    course: { type: CourseSchema },
+    totalHours: { type: Number },
+    totalCredits: { type: Number },
 });
 
 const BranchSchema = new Schema<IBranch>({
-    branchName: { type: String, required: true, enum: ["Civil Engineering", "Computer Science", "Electrical Engineering", "Mechanical Engineering"] },
-    semesters: { type: [SemesterSchema], required: true },
+    branchName: {
+        type: String,
+        enum: [
+            "Civil Engineering",
+            "Computer Science",
+            "Electrical & Electronics Engineering",
+            "Mechanical Engineering",
+        ],
+        required: true,
+    },
+    semester: { type: SemesterSchema }, // Changed to a single object
 });
 
-// Schema for group information (only for 2024 scheme)
 const GroupSchema = new Schema<IGroup>({
-    groupName: { type: String, required: true, enum: ["Group A", "Group B", "Group C", "Group D"] },
-    branches: { type: [BranchSchema], required: true },
+    groupName: {
+        type: String,
+        enum: ["Group A", "Group B", "Group C", "Group D"],
+        required: true,
+    },
+    branch: { type: BranchSchema, required: true },
 });
 
-// Main schema for the overall course structure
 const SchemeSchema = new Schema<IScheme>({
     schemeName: { type: String, required: true },
     year: { type: Number, required: true },
-    groups: {
-        type: [GroupSchema],
-        required: function (this: IScheme) {
-            return this.year === 2024; // Groups are only required for 2024
-        },
-    },
-    branches: {
-        type: [BranchSchema],
-        required: function (this: IScheme) {
-            return this.year !== 2024; // Branches are required for years other than 2024
-        },
-    },
+    groups: { type: GroupSchema }, // Optional array of groups
+    branches: { type: BranchSchema }, // Optional array of branches
 });
 
+// Create model
 const Scheme = models.Scheme || model<IScheme>("Scheme", SchemeSchema);
 
 export default Scheme;
