@@ -141,6 +141,11 @@ export default function DataEntryPage() {
           View All Courses
         </button>
       </Link>
+      <Link href={'/add-activity-point'}>
+        <button className="absolute top-[5rem] left-[2rem] bg-azure-500 border-none outline-none rounded-lg p-2 text-white">
+          Add Activity Point
+        </button>
+      </Link>
       <div className="flex flex-col items-start justify-center w-[50vw] space-y-4">
         <div className="flex items-center justify-center w-full">
           <span className="text-azure-600 font-semibold text-2xl">
