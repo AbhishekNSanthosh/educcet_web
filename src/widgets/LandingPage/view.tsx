@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -134,10 +135,17 @@ export default function DataEntryPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col px-[5vw] py-[2rem] items-center justify-start">
+    <div className="min-h-screen flex flex-col px-[5vw] py-[2rem] items-center justify-start relative">
+      <Link href={'/all-courses'}>
+        <button className="absolute top-[2rem] left-[2rem] bg-azure-500 border-none outline-none rounded-lg p-2 text-white">
+          View All Courses
+        </button>
+      </Link>
       <div className="flex flex-col items-start justify-center w-[50vw] space-y-4">
         <div className="flex items-center justify-center w-full">
-          Scheme Data Entry
+          <span className="text-azure-600 font-semibold text-2xl">
+            EDUCCET KTU Scheme Data Entry
+          </span>
         </div>
         <div className="flex flex-col border border-gray-200 w-full p-5 rounded-lg mt-5">
           <div className="flex flex-col space-y-5">
