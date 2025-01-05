@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 interface Syllabus {
   moduleName: string;
@@ -88,7 +89,6 @@ export default function DataEntryPage() {
   console.log(schemeData);
 
   const handleSubmit = async () => {
-  
     try {
       const response = await fetch("/api/courses/new", {
         method: "POST", // Specify the HTTP method
@@ -97,18 +97,41 @@ export default function DataEntryPage() {
         },
         body: JSON.stringify(schemeData), // Convert the request body to JSON
       });
-  
+
+      const data = await response.json();
+
+      // Handle non-OK responses
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw data;
       }
-  
-      const data = await response.json(); // Parse the response JSON
+      toast.success("Submitted succesfully", {
+        position: "bottom-center",
+      });
+      setSchemeData({
+        schemeName: "",
+        year: new Date().getFullYear(),
+        groupName: "",
+        branchName: "",
+        semester: "",
+        courseName: "",
+        courseNumber: "",
+        slot: "",
+        ltp: "",
+        hours: "",
+        credits: "",
+        syllabus: [{ moduleName: "", moduleContent: "" }],
+        totalHours: "",
+        totalCredits: "",
+      });
+      // Parse the response JSON
       console.log("Success:", data);
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (error: any) {
+      console.log("Error:", error);
+      toast.error(error?.message, {
+        position: "bottom-center",
+      });
     }
   };
-  
 
   return (
     <div className="min-h-screen flex flex-col px-[5vw] py-[2rem] items-center justify-start">
@@ -144,7 +167,8 @@ export default function DataEntryPage() {
               <label htmlFor="group" className="block text-sm text-gray-800">
                 Group Name
                 <span className="text-[11px]">
-                  (If 2024 scheme, kindly enter the group else leave it blank)
+                  {"  "}(If 2024 scheme, kindly enter the group else leave it
+                  blank)
                 </span>
               </label>
               <select
@@ -172,10 +196,15 @@ export default function DataEntryPage() {
                 onChange={handleSelectChange}
                 className="border border-gray-300 rounded px-2 py-2 outline-none w-full text-gray-800"
               >
+                <option value="">Select</option>
                 <option value="Computer Science">Computer Science</option>
                 <option value="Civil Engineering">Civil Engineering</option>
-                <option value="Electrical & Electronics Engineering">Electrical & Electronics Engineering</option>
-                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                <option value="Electrical & Electronics Engineering">
+                  Electrical & Electronics Engineering
+                </option>
+                <option value="Mechanical Engineering">
+                  Mechanical Engineering
+                </option>
               </select>
             </div>
             <div>
@@ -189,10 +218,15 @@ export default function DataEntryPage() {
                 onChange={handleSelectChange}
                 className="border border-gray-300 rounded px-2 py-2 outline-none w-full text-gray-800"
               >
+                <option value="">Select</option>
                 <option value="1">Semester 1</option>
                 <option value="2">Semester 2</option>
                 <option value="3">Semester 3</option>
                 <option value="4">Semester 4</option>
+                <option value="5">Semester 5</option>
+                <option value="6">Semester 6</option>
+                <option value="7">Semester 7</option>
+                <option value="8">Semester 8</option>
               </select>
             </div>
             <div className="flex space-x-4">
@@ -331,9 +365,12 @@ export default function DataEntryPage() {
             </div>
             <div className="w-full h-[1px] bg-gray-400"></div>
             <div className="">
-              <button onClick={()=>{
-                handleSubmit()
-              }} className="capitalize w-full bg-azure-600 rounded-lg border-none outline-none py-3 text-white">
+              <button
+                onClick={() => {
+                  handleSubmit();
+                }}
+                className="capitalize w-full bg-azure-600 rounded-lg border-none outline-none py-3 text-white"
+              >
                 submit
               </button>
             </div>
