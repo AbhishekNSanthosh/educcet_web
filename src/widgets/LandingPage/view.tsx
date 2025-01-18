@@ -8,9 +8,14 @@ interface Syllabus {
   moduleContent: string;
 }
 
+interface Cos {
+  title: string;
+  co: string;
+}
+
 interface SchemeData {
   schemeName: string;
-  year: number;
+  year: string;
   groupName: string;
   branchName: string;
   semester: string;
@@ -20,6 +25,7 @@ interface SchemeData {
   ltp: string;
   hours: string;
   syllabus: Syllabus[];
+  courseOutcomes:Cos[];
   credits: string;
   totalHours: string;
   totalCredits: string;
@@ -28,7 +34,7 @@ interface SchemeData {
 export default function DataEntryPage() {
   const [schemeData, setSchemeData] = useState<SchemeData>({
     schemeName: "",
-    year: new Date().getFullYear(),
+    year: "",
     groupName: "",
     branchName: "",
     semester: "",
@@ -39,30 +45,35 @@ export default function DataEntryPage() {
     hours: "",
     credits: "",
     syllabus: [{ moduleName: "", moduleContent: "" }],
+    courseOutcomes: [{ title: "", co: "" }],
     totalHours: "",
     totalCredits: "",
   });
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    index?: number
-  ) => {
-    const { name, value } = e.target;
+const handleInputChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  index?: number,
+  field?: 'syllabus' | 'courseOutcomes' // Optional parameter to specify the field
+) => {
+  const { name, value } = e.target;
 
-    if (index !== undefined) {
-      const updatedSyllabus = [...schemeData.syllabus];
-      updatedSyllabus[index][name as keyof Syllabus] = value; // Correctly cast `name` to keyof Syllabus
-      setSchemeData((prevData) => ({
-        ...prevData,
-        syllabus: updatedSyllabus,
-      }));
-    } else {
-      setSchemeData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
-  };
+  if (index !== undefined && field) {
+    // Handle updates for array fields (syllabus or courseOutcomes)
+    const updatedField = [...(schemeData[field] as any[])]; // Clone the relevant array
+    updatedField[index][name as keyof typeof updatedField[number]] = value; // Update the value
+    setSchemeData((prevData) => ({
+      ...prevData,
+      [field]: updatedField,
+    }));
+  } else {
+    // Handle updates for non-array fields
+    setSchemeData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  }
+};
+
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -79,6 +90,14 @@ export default function DataEntryPage() {
     }));
   };
 
+  const addCourseOutcome = () => {
+    setSchemeData((prevData) => ({
+      ...prevData,
+      courseOutcomes: [...prevData.courseOutcomes, { title: "", co: "" }],
+    }));
+  };
+
+
   const removeSyllabusModule = (index: number) => {
     const updatedSyllabus = schemeData.syllabus.filter((_, i) => i !== index);
     setSchemeData((prevData) => ({
@@ -86,6 +105,15 @@ export default function DataEntryPage() {
       syllabus: updatedSyllabus,
     }));
   };
+
+  const removeCourseOutcomes = (index: number) => {
+    const updatedOutcomes = schemeData.courseOutcomes.filter((_, i) => i !== index);
+    setSchemeData((prevData) => ({
+      ...prevData,
+      courseOutcomes: updatedOutcomes,
+    }));
+  };
+``  
 
   console.log(schemeData);
 
@@ -110,7 +138,7 @@ export default function DataEntryPage() {
       });
       setSchemeData({
         schemeName: "",
-        year: new Date().getFullYear(),
+        year: "",
         groupName: "",
         branchName: "",
         semester: "",
@@ -121,6 +149,7 @@ export default function DataEntryPage() {
         hours: "",
         credits: "",
         syllabus: [{ moduleName: "", moduleContent: "" }],
+        courseOutcomes: [{ title: "", co: "" }],
         totalHours: "",
         totalCredits: "",
       });
@@ -136,12 +165,12 @@ export default function DataEntryPage() {
 
   return (
     <div className="min-h-screen flex flex-col px-[5vw] py-[2rem] items-center justify-start relative">
-      <Link href={'/all-courses'}>
+      <Link href={"/all-courses"}>
         <button className="absolute top-[2rem] left-[2rem] bg-azure-500 border-none outline-none rounded-lg p-2 text-white">
           View All Courses
         </button>
       </Link>
-      <Link href={'/add-activity-point'}>
+      <Link href={"/add-activity-point"}>
         <button className="absolute top-[5rem] left-[2rem] bg-azure-500 border-none outline-none rounded-lg p-2 text-white">
           Add Activity Point
         </button>
@@ -166,14 +195,18 @@ export default function DataEntryPage() {
                 />
               </div>
               <div className="flex flex-1 flex-col">
-                <span className="text-sm text-gray-800">Year</span>
-                <input
-                  type="text"
+                <span className="text-sm text-gray-800">Scheme Year</span>
+                <select
                   name="year"
+                  id="year"
                   value={schemeData.year}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 rounded-lg outline-none p-3"
-                />
+                  onChange={handleSelectChange}
+                  className="border border-gray-300 rounded px-2 py-2 outline-none w-full text-gray-800"
+                >
+                  <option value="">Select</option>
+                  <option value="2019">2019</option>
+                  <option value="2024">2024</option>
+                </select>
               </div>
             </div>
             <div>
@@ -309,7 +342,62 @@ export default function DataEntryPage() {
               </div>
             </div>
 
+            <div className="w-full items-center justify-center flex">
+              <div className="flex-1 bg-gray-400 h-[1px]"></div>
+              <span className="mx-[1rem]">Course Outcomes</span>
+              <div className="flex-1 bg-gray-400 h-[1px]"></div>
+            </div>
+            <div className="flex flex-col space-y-4 mt-5 w-full">
+              {schemeData.courseOutcomes.map((cos, index) => (
+                <div key={index} className="flex space-x-2 items-start w-full">
+                  <div className="flex flex-col space-y-2 w-full">
+                    <div className="flex flex-1 flex-col w-full">
+                      <span className="text-sm text-gray-800">CO Title</span>
+                      <input
+                        type="text"
+                        name="title"
+                        value={cos.title}
+                        onChange={(e) => handleInputChange(e, index,"courseOutcomes")}
+                        className="border border-gray-300 rounded-lg outline-none p-3"
+                      />
+                    </div>
+                    <div className="flex flex-1 flex-col w-full">
+                      <span className="text-sm text-gray-800">Co</span>
+                      <textarea
+                        rows={5}
+                        name="co"
+                        value={cos.co}
+                        onChange={(e) => handleInputChange(e, index,"courseOutcomes")}
+                        className="border border-gray-300 rounded-lg outline-none p-3"
+                      />
+                    </div>
+                  </div>
+                  {index !== 0 && (
+                    <button
+                      type="button"
+                      onClick={() => removeCourseOutcomes(index)}
+                      className="mt-6 px-4 py-2 bg-white border border-slk-regular text-black-100 rounded-md"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addCourseOutcome}
+                className="mt-4 px-4 py-2 bg-azure-500 text-2xl font-semibold text-white rounded-md w-[5rem]"
+              >
+                +
+              </button>
+            </div>
+
             {/* Syllabus Section */}
+            <div className="w-full items-center justify-center flex">
+              <div className="flex-1 bg-gray-400 h-[1px]"></div>
+              <span className="mx-[1rem]">Syllabus</span>
+              <div className="flex-1 bg-gray-400 h-[1px]"></div>
+            </div>
             <div className="flex flex-col space-y-4 mt-5 w-full">
               {schemeData.syllabus.map((syllabus, index) => (
                 <div key={index} className="flex space-x-2 items-start w-full">
@@ -320,17 +408,17 @@ export default function DataEntryPage() {
                         type="text"
                         name="moduleName"
                         value={syllabus.moduleName}
-                        onChange={(e) => handleInputChange(e, index)}
+                        onChange={(e) => handleInputChange(e, index,"syllabus")}
                         className="border border-gray-300 rounded-lg outline-none p-3"
                       />
                     </div>
                     <div className="flex flex-1 flex-col w-full">
-                      <span className="text-sm text-gray-800">COs</span>
+                      <span className="text-sm text-gray-800">Syllabus</span>
                       <textarea
                         rows={5}
                         name="moduleContent"
                         value={syllabus.moduleContent}
-                        onChange={(e) => handleInputChange(e, index)}
+                        onChange={(e) => handleInputChange(e, index,"syllabus")}
                         className="border border-gray-300 rounded-lg outline-none p-3"
                       />
                     </div>
@@ -355,7 +443,7 @@ export default function DataEntryPage() {
               </button>
             </div>
             <div className="flex space-x-4">
-              <div className="flex flex-1 flex-col">
+              {/* <div className="flex flex-1 flex-col">
                 <span className="text-sm text-gray-800">Total Hours</span>
                 <input
                   type="text"
@@ -364,8 +452,8 @@ export default function DataEntryPage() {
                   onChange={handleInputChange}
                   className="border border-gray-300 rounded-lg outline-none p-3"
                 />
-              </div>
-              <div className="flex flex-1 flex-col">
+              </div> */}
+              {/* <div className="flex flex-1 flex-col">
                 <span className="text-sm text-gray-800">Total Credits</span>
                 <input
                   type="text"
@@ -374,7 +462,7 @@ export default function DataEntryPage() {
                   onChange={handleInputChange}
                   className="border border-gray-300 rounded-lg outline-none p-3"
                 />
-              </div>
+              </div> */}
             </div>
             <div className="w-full h-[1px] bg-gray-400"></div>
             <div className="">
