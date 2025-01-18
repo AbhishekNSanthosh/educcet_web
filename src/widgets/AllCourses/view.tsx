@@ -56,7 +56,7 @@ interface CourseScheme {
   _id: string;
   schemeName: string;
   year: number;
-  branches?: Branches;
+  branch?: Branches;
   group?: Group;
   __v: number;
 }
@@ -103,21 +103,21 @@ const App: React.FC = () => {
               <h2 className="text-2xl font-semibold text-blue-500 mb-4">
                 {scheme.schemeName} ({scheme.year})
               </h2>
-              {scheme.branches && (
+              {scheme.branch && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-700">Branch: {scheme.branches.branchName}</h3>
+                  <h3 className="text-lg font-semibold text-gray-700">Branch: {scheme.branch.branchName}</h3>
                   <h4 className="text-md font-semibold text-gray-800 mt-4">Course Details:</h4>
                   <div className="text-gray-600 space-y-1">
-                    <p>Slot: {scheme.branches.semester.course.slot}</p>
-                    <p>Course Number: {scheme.branches.semester.course.courseNumber}</p>
-                    <p>Course Name: {scheme.branches.semester.course.courseName}</p>
-                    <p>LTP: {scheme.branches.semester.course.ltp}</p>
-                    <p>Hours: {scheme.branches.semester.course.hours}</p>
-                    <p>Credits: {scheme.branches.semester.course.credits}</p>
+                    <p>Slot: {scheme.branch.semester.course.slot}</p>
+                    <p>Course Number: {scheme.branch.semester.course.courseNumber}</p>
+                    <p>Course Name: {scheme.branch.semester.course.courseName}</p>
+                    <p>LTP: {scheme.branch.semester.course.ltp}</p>
+                    <p>Hours: {scheme.branch.semester.course.hours}</p>
+                    <p>Credits: {scheme.branch.semester.course.credits}</p>
                   </div>
                   <h5 className="text-md font-semibold text-gray-800 mt-4">Syllabus:</h5>
                   <ul className="list-disc list-inside space-y-2">
-                    {scheme.branches.semester.course.syllabus.map((module) => (
+                    {scheme.branch.semester.course.syllabus.map((module) => (
                       <li key={module._id}>
                         <p className="font-medium text-gray-700">{module.moduleName}</p>
                         <p className="text-gray-600">{module.moduleContent}</p>
@@ -125,7 +125,7 @@ const App: React.FC = () => {
                     ))}
                   </ul>
                   <ul className="list-disc list-inside space-y-2">
-                    {scheme.branches.semester.course.courseOutcomes?.map((module,index) => (
+                    {scheme.branch.semester.course.courseOutcomes?.map((module,index) => (
                       <li key={index}>
                         <p className="font-medium text-gray-700">{module.title}</p>
                         <p className="text-gray-600">{module.co}</p>

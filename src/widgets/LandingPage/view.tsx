@@ -35,7 +35,7 @@ export default function DataEntryPage() {
   const [schemeData, setSchemeData] = useState<SchemeData>({
     schemeName: "",
     year: "",
-    groupName: "",
+    groupName: "nill",
     branchName: "",
     semester: "",
     courseName: "",
@@ -136,23 +136,23 @@ export default function DataEntryPage() {
       toast.success("Submitted succesfully", {
         position: "bottom-center",
       });
-      setSchemeData({
-        schemeName: "",
-        year: "",
-        groupName: "",
-        branchName: "",
-        semester: "",
-        courseName: "",
-        courseNumber: "",
-        slot: "",
-        ltp: "",
-        hours: "",
-        credits: "",
-        syllabus: [{ moduleName: "", moduleContent: "" }],
-        courseOutcomes: [{ title: "", co: "" }],
-        totalHours: "",
-        totalCredits: "",
-      });
+      // setSchemeData({
+      //   schemeName: "",
+      //   year: "",
+      //   groupName: "nill",
+      //   branchName: "",
+      //   semester: "",
+      //   courseName: "",
+      //   courseNumber: "",
+      //   slot: "",
+      //   ltp: "",
+      //   hours: "",
+      //   credits: "",
+      //   syllabus: [{ moduleName: "", moduleContent: "" }],
+      //   courseOutcomes: [{ title: "", co: "" }],
+      //   totalHours: "",
+      //   totalCredits: "",
+      // });
       // Parse the response JSON
       console.log("Success:", data);
     } catch (error: any) {
@@ -232,7 +232,7 @@ export default function DataEntryPage() {
                 onChange={handleSelectChange}
                 className="border border-gray-300 rounded px-2 py-2 outline-none w-full text-gray-800"
               >
-                <option value="">Select</option>
+                <option value="nill">Select</option>
                 <option value="Group A">Group A</option>
                 <option value="Group B">Group B</option>
                 <option value="Group C">Group C</option>

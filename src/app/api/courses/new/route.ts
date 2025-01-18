@@ -18,69 +18,63 @@ export const POST = async (req: any) => {
             hours,
             credits,
             syllabus,
-            courseOutcomes
+            courseOutcomes,
         } = await req.json();
-console.log( schemeName,
-    year,
-    groupName,
-    branchName,
-    semester,
-    courseName,
-    courseNumber,
-    slot,
-    ltp,
-    hours,
-    credits,
-    syllabus,
-    courseOutcomes)
 
-    console.log('Group name',groupName)
+        console.log("Received data:", {
+            schemeName,
+            year,
+            groupName,
+            branchName,
+            semester,
+            courseName,
+            courseNumber,
+            slot,
+            ltp,
+            hours,
+            credits,
+            syllabus,
+            courseOutcomes,
+        });
+
+        console.log("check: ",groupName === "nill")
+
         // Ensure the database connection
         await connectToDB();
 
-        // Validate input fields
-        if (!schemeName || !year || !branchName || !semester || !courseName || !courseNumber || !slot || !ltp || !credits || !syllabus || !courseOutcomes) {
+        // Validate required fields
+        if (
+            !schemeName ||
+            !year ||
+            !branchName ||
+            !semester ||
+            !courseName ||
+            !courseNumber ||
+            !slot ||
+            !ltp ||
+            !credits ||
+            !syllabus ||
+            !courseOutcomes
+        ) {
             throw new Error("All required fields must be provided.");
         }
 
+        // Validate data types
+        // if (typeof year !== "number") {
+        //     throw new Error("Year must be a number.");
+        // }
         // if (typeof hours !== "number") {
-        //     throw { message: "Hours should be a number." ,status:400}
-        // }else  if (typeof year !== "number") {
-        //     throw { message: "Year should be a number." ,status:400}
-        // }else  if (typeof credits !== "number") {
-        //     throw { message: "Credits should be a number." ,status:400}
-        // }else  if (typeof totalCredits !== "number") {
-        //     throw { message: "Total credits should be a number." ,status:400}
-        // }else  if (typeof totalHours !== "number") {
-        //     throw { message: "Total hours should be a number." ,status:400}
+        //     throw new Error("Hours must be a number.");
+        // }
+        // if (typeof credits !== "number") {
+        //     throw new Error("Credits must be a number.");
         // }
 
-        let NewSchema;
+        let newSchema;
 
-        // Create a new Course object with destructured values
-        if (!groupName) {
-            NewSchema = new Scheme({
-                schemeName,
-                year,
-                branches: {
-                    branchName,
-                    semester: {
-                        semesterNumber: semester,
-                        course: {
-                            slot,
-                            courseNumber,
-                            courseName,
-                            ltp,
-                            hours,
-                            credits,
-                            syllabus,
-                            courseOutcomes
-                        }
-                    }
-                }
-            });
-        } else {
-            NewSchema = new Scheme({
+        // Check if groupName exists and construct the schema accordingly
+        if (groupName && groupName.toLowerCase() !== 'nill') {
+            newSchema = new Scheme({
                 schemeName,
                 year,
                 group: {
@@ -97,25 +91,51 @@ console.log( schemeName,
                                 hours,
                                 credits,
                                 syllabus,
-                                courseOutcomes
-                            }
-                        }
-                    }
-                }
+                                courseOutcomes,
+                            },
+                        },
+                    },
+                },
             });
+            console.log("Schema with groupName created.");
+        } else {
+            newSchema = new Scheme({
+                schemeName,
+                year,
+                branch: {
+                    branchName,
+                    semester: {
+                        semesterNumber: semester,
+                        course: {
+                            slot,
+                            courseNumber,
+                            courseName,
+                            ltp,
+                            hours,
+                            credits,
+                            syllabus,
+                            courseOutcomes,
+                        },
+                    },
+                },
+            });
+            console.log("Schema without groupName created.");
         }
+        
 
-        // Save the new course document
-        const res = await NewSchema.save();
-        console.log(res);
+        // Save the schema to the database
+        const res = await newSchema.save();
+        console.log("Data saved:", res);
 
-        return NextResponse.json({ message: "New Data Added", data: res }, { status: 200 });
+        return NextResponse.json(
+            { message: "New Data Added", data: res },
+            { status: 200 }
+        );
     } catch (error: any) {
-        console.error("Error updating student:", error);
+        console.error("Error adding data:", error.message);
 
-        // Send a generic error response
-        return Response.json(
-            { message: error.message, desc: error.desc },
+        return NextResponse.json(
+            { message: error.message || "An error occurred" },
             { status: error.status || 500 }
         );
     }
