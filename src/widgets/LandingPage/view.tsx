@@ -25,7 +25,7 @@ interface SchemeData {
   ltp: string;
   hours: string;
   syllabus: Syllabus[];
-  courseOutcomes:Cos[];
+  courseOutcomes: Cos[];
   credits: string;
   totalHours: string;
   totalCredits: string;
@@ -50,30 +50,29 @@ export default function DataEntryPage() {
     totalCredits: "",
   });
 
-const handleInputChange = (
-  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  index?: number,
-  field?: 'syllabus' | 'courseOutcomes' // Optional parameter to specify the field
-) => {
-  const { name, value } = e.target;
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    index?: number,
+    field?: "syllabus" | "courseOutcomes" // Optional parameter to specify the field
+  ) => {
+    const { name, value } = e.target;
 
-  if (index !== undefined && field) {
-    // Handle updates for array fields (syllabus or courseOutcomes)
-    const updatedField = [...(schemeData[field] as any[])]; // Clone the relevant array
-    updatedField[index][name as keyof typeof updatedField[number]] = value; // Update the value
-    setSchemeData((prevData) => ({
-      ...prevData,
-      [field]: updatedField,
-    }));
-  } else {
-    // Handle updates for non-array fields
-    setSchemeData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  }
-};
-
+    if (index !== undefined && field) {
+      // Handle updates for array fields (syllabus or courseOutcomes)
+      const updatedField = [...(schemeData[field] as any[])]; // Clone the relevant array
+      updatedField[index][name as keyof (typeof updatedField)[number]] = value; // Update the value
+      setSchemeData((prevData) => ({
+        ...prevData,
+        [field]: updatedField,
+      }));
+    } else {
+      // Handle updates for non-array fields
+      setSchemeData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+  };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -97,7 +96,6 @@ const handleInputChange = (
     }));
   };
 
-
   const removeSyllabusModule = (index: number) => {
     const updatedSyllabus = schemeData.syllabus.filter((_, i) => i !== index);
     setSchemeData((prevData) => ({
@@ -107,13 +105,15 @@ const handleInputChange = (
   };
 
   const removeCourseOutcomes = (index: number) => {
-    const updatedOutcomes = schemeData.courseOutcomes.filter((_, i) => i !== index);
+    const updatedOutcomes = schemeData.courseOutcomes.filter(
+      (_, i) => i !== index
+    );
     setSchemeData((prevData) => ({
       ...prevData,
       courseOutcomes: updatedOutcomes,
     }));
   };
-``  
+  ``;
 
   console.log(schemeData);
 
@@ -186,13 +186,21 @@ const handleInputChange = (
             <div className="flex space-x-4">
               <div className="flex flex-1 flex-col">
                 <span className="text-sm text-gray-800">Scheme Name</span>
-                <input
-                  type="text"
+                <select
                   name="schemeName"
+                  id="schemeName"
                   value={schemeData.schemeName}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 rounded-lg outline-none p-3"
-                />
+                  onChange={handleSelectChange}
+                  className="border border-gray-300 rounded px-2 py-2 outline-none w-full text-gray-800"
+                >
+                  <option value="">Select</option>
+                  <option value="Two Thousand Ninteen Scheme">
+                    Two Thousand Ninteen Scheme
+                  </option>
+                  <option value="Two Thousand Twenty Four Scheme">
+                    Two Thousand Twenty Four Scheme
+                  </option>
+                </select>
               </div>
               <div className="flex flex-1 flex-col">
                 <span className="text-sm text-gray-800">Scheme Year</span>
@@ -357,7 +365,9 @@ const handleInputChange = (
                         type="text"
                         name="title"
                         value={cos.title}
-                        onChange={(e) => handleInputChange(e, index,"courseOutcomes")}
+                        onChange={(e) =>
+                          handleInputChange(e, index, "courseOutcomes")
+                        }
                         className="border border-gray-300 rounded-lg outline-none p-3"
                       />
                     </div>
@@ -367,7 +377,9 @@ const handleInputChange = (
                         rows={5}
                         name="co"
                         value={cos.co}
-                        onChange={(e) => handleInputChange(e, index,"courseOutcomes")}
+                        onChange={(e) =>
+                          handleInputChange(e, index, "courseOutcomes")
+                        }
                         className="border border-gray-300 rounded-lg outline-none p-3"
                       />
                     </div>
@@ -408,7 +420,9 @@ const handleInputChange = (
                         type="text"
                         name="moduleName"
                         value={syllabus.moduleName}
-                        onChange={(e) => handleInputChange(e, index,"syllabus")}
+                        onChange={(e) =>
+                          handleInputChange(e, index, "syllabus")
+                        }
                         className="border border-gray-300 rounded-lg outline-none p-3"
                       />
                     </div>
@@ -418,7 +432,9 @@ const handleInputChange = (
                         rows={5}
                         name="moduleContent"
                         value={syllabus.moduleContent}
-                        onChange={(e) => handleInputChange(e, index,"syllabus")}
+                        onChange={(e) =>
+                          handleInputChange(e, index, "syllabus")
+                        }
                         className="border border-gray-300 rounded-lg outline-none p-3"
                       />
                     </div>

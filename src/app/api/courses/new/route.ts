@@ -18,15 +18,28 @@ export const POST = async (req: any) => {
             hours,
             credits,
             syllabus,
-            totalHours,
-            totalCredits
+            courseOutcomes
         } = await req.json();
+console.log( schemeName,
+    year,
+    groupName,
+    branchName,
+    semester,
+    courseName,
+    courseNumber,
+    slot,
+    ltp,
+    hours,
+    credits,
+    syllabus,
+    courseOutcomes)
 
+    console.log('Group name',groupName)
         // Ensure the database connection
         await connectToDB();
 
         // Validate input fields
-        if (!schemeName || !year || !branchName || !semester || !courseName || !courseNumber || !slot || !ltp || !credits || !syllabus || !totalHours || !totalCredits) {
+        if (!schemeName || !year || !branchName || !semester || !courseName || !courseNumber || !slot || !ltp || !credits || !syllabus || !courseOutcomes) {
             throw new Error("All required fields must be provided.");
         }
 
@@ -45,7 +58,7 @@ export const POST = async (req: any) => {
         let NewSchema;
 
         // Create a new Course object with destructured values
-        if (groupName === "") {
+        if (!groupName) {
             NewSchema = new Scheme({
                 schemeName,
                 year,
@@ -53,8 +66,6 @@ export const POST = async (req: any) => {
                     branchName,
                     semester: {
                         semesterNumber: semester,
-                        totalHours,
-                        totalCredits,
                         course: {
                             slot,
                             courseNumber,
@@ -62,7 +73,8 @@ export const POST = async (req: any) => {
                             ltp,
                             hours,
                             credits,
-                            syllabus
+                            syllabus,
+                            courseOutcomes
                         }
                     }
                 }
@@ -77,8 +89,6 @@ export const POST = async (req: any) => {
                         branchName,
                         semester: {
                             semesterNumber: semester,
-                            totalHours,
-                            totalCredits,
                             course: {
                                 slot,
                                 courseNumber,
@@ -86,7 +96,8 @@ export const POST = async (req: any) => {
                                 ltp,
                                 hours,
                                 credits,
-                                syllabus
+                                syllabus,
+                                courseOutcomes
                             }
                         }
                     }

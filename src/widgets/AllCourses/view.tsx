@@ -9,6 +9,11 @@ interface Module {
   _id: string;
 }
 
+interface Cos {
+  title: string;
+  co: string;
+}
+
 interface Course {
   slot: string;
   courseNumber: string;
@@ -17,6 +22,7 @@ interface Course {
   hours: number;
   credits: number;
   syllabus: Module[];
+  courseOutcomes: Cos[];
   _id: string;
 }
 
@@ -79,6 +85,8 @@ const App: React.FC = () => {
     fetchData();
   }, []);
 
+  console.log(data)
+
   return (
     <div className="min-h-screen bg-gray-50 py-10">
         <Link href={'/'}>
@@ -98,8 +106,6 @@ const App: React.FC = () => {
               {scheme.branches && (
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-gray-700">Branch: {scheme.branches.branchName}</h3>
-                  <p className="text-gray-600">Total Hours: {scheme.branches.semester.totalHours ?? "N/A"}</p>
-                  <p className="text-gray-600">Total Credits: {scheme.branches.semester.totalCredits ?? "N/A"}</p>
                   <h4 className="text-md font-semibold text-gray-800 mt-4">Course Details:</h4>
                   <div className="text-gray-600 space-y-1">
                     <p>Slot: {scheme.branches.semester.course.slot}</p>
@@ -118,14 +124,20 @@ const App: React.FC = () => {
                       </li>
                     ))}
                   </ul>
+                  <ul className="list-disc list-inside space-y-2">
+                    {scheme.branches.semester.course.courseOutcomes?.map((module,index) => (
+                      <li key={index}>
+                        <p className="font-medium text-gray-700">{module.title}</p>
+                        <p className="text-gray-600">{module.co}</p>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
               {scheme.group && (
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-gray-700">Group: {scheme.group.groupName}</h3>
                   <h4 className="text-md font-semibold text-gray-800 mt-4">Branch: {scheme.group.branch.branchName}</h4>
-                  <p className="text-gray-600">Total Hours: {scheme.group.branch.semester.totalHours ?? "N/A"}</p>
-                  <p className="text-gray-600">Total Credits: {scheme.group.branch.semester.totalCredits ?? "N/A"}</p>
                   <h4 className="text-md font-semibold text-gray-800 mt-4">Course Details:</h4>
                   <div className="text-gray-600 space-y-1">
                     <p>Slot: {scheme.group.branch.semester.course.slot}</p>
@@ -141,6 +153,15 @@ const App: React.FC = () => {
                       <li key={module._id}>
                         <p className="font-medium text-gray-700">{module.moduleName}</p>
                         <p className="text-gray-600">{module.moduleContent}</p>
+                      </li>
+                    ))}
+                  </ul>
+                  <h5 className="text-md font-semibold text-gray-800 mt-4">Course Outcomes:</h5>
+                  <ul className="list-disc list-inside space-y-2">
+                    {scheme?.group?.branch?.semester?.course?.courseOutcomes?.map((module,index) => (
+                      <li key={index}>
+                        <p className="font-medium text-gray-700">{module.title}</p>
+                        <p className="text-gray-600">{module.co}</p>
                       </li>
                     ))}
                   </ul>
