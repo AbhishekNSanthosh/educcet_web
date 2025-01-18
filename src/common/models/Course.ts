@@ -5,6 +5,11 @@ interface IModule {
     moduleContent: string;
 }
 
+interface ICourseOutcome {
+    title:string;
+    co:string;
+}
+
 interface ICourse {
     slot: string;
     courseNumber: string;
@@ -13,6 +18,7 @@ interface ICourse {
     hours: number;
     credits?: number;
     syllabus: IModule[];
+    courseOutcomes:ICourseOutcome[];
 }
 
 interface ISemester {
@@ -45,6 +51,11 @@ const ModuleSchema = new Schema<IModule>({
     moduleContent: { type: String, required: true },
 });
 
+const CourseOutComeSchema = new Schema<ICourseOutcome>({
+    title: { type: String, required: true },
+    co: { type: String, required: true },
+});
+
 const CourseSchema = new Schema<ICourse>({
     slot: { type: String, required: true },
     courseNumber: { type: String, required: true },
@@ -53,13 +64,12 @@ const CourseSchema = new Schema<ICourse>({
     hours: { type: Number, required: true },
     credits: { type: Number },
     syllabus: { type: [ModuleSchema], required: true },
+    courseOutcomes: { type: [CourseOutComeSchema], required: true },
 });
 
 const SemesterSchema = new Schema<ISemester>({
     semesterNumber: { type: Number },
     course: { type: CourseSchema },
-    totalHours: { type: Number },
-    totalCredits: { type: Number },
 });
 
 const BranchSchema = new Schema<IBranch>({
